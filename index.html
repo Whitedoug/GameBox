@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#090b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>GameBox</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main id="app">
+    <section id="home" class="screen active">
+      <header class="hero">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true"><span>×</span><span>○</span></div>
+          <p class="eyebrow">GAMEBOX</p>
+        </div>
+        <h1>Play anyone.<br><span>Even AI.</span></h1>
+        <p class="subtitle">Quick games designed for your phone.</p>
+      </header>
+
+      <div class="section-label">Featured game</div>
+
+      <button class="game-card" onclick="openGame('tictactoe')" aria-label="Open Tic-Tac-Toe">
+        <div class="card-art" aria-hidden="true">
+          <div class="mini-grid"><i>×</i><i></i><i>○</i><i></i><i>×</i><i></i><i>○</i><i></i><i>×</i></div>
+        </div>
+        <div class="game-info">
+          <span class="game-tag">PLAY NOW</span>
+          <h2>Tic-Tac-Toe</h2>
+          <p>Challenge an AI opponent</p>
+        </div>
+        <span class="chevron" aria-hidden="true">→</span>
+      </button>
+
+      <div class="coming-soon">
+        <div class="plus">＋</div>
+        <div>
+          <span class="game-tag muted">COMING SOON</span>
+          <strong>More games</strong>
+          <p>Chess, Checkers, 8-Ball and more</p>
+        </div>
+      </div>
+
+      <footer class="home-footer">Built for quick matches. More coming soon.</footer>
+    </section>
+
+    <section id="game" class="screen">
+      <div class="topbar">
+        <button class="icon-button" onclick="showHome()" aria-label="Back">←</button>
+        <div class="top-title"><span>GAMEBOX</span><strong>Tic-Tac-Toe</strong></div>
+        <button class="icon-button" onclick="newGame()" aria-label="New game">↻</button>
+      </div>
+
+      <div class="score-card">
+        <div class="score-player"><span class="player-dot human"></span><span>You</span><b id="humanScore">0</b></div>
+        <div class="score-divider">VS</div>
+        <div class="score-player"><span class="player-dot ai"></span><span>AI</span><b id="aiScore">0</b></div>
+      </div>
+
+      <div class="status-pill" id="status">Your turn</div>
+
+      <div class="board-shell">
+        <div class="board" id="board" aria-label="Tic-Tac-Toe board"></div>
+      </div>
+
+      <div class="difficulty-wrap">
+        <div class="difficulty-heading">
+          <div>
+            <span class="game-tag muted">OPPONENT</span>
+            <p>AI difficulty</p>
+          </div>
+          <span class="sparkle">✦</span>
+        </div>
+        <div class="segmented">
+          <button data-level="easy" onclick="setDifficulty('easy')">Easy</button>
+          <button data-level="medium" onclick="setDifficulty('medium')">Medium</button>
+          <button data-level="hard" class="selected" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+      </div>
+
+      <button class="primary" id="newGameButton" onclick="newGame()"><span>New Game</span><span>＋</span></button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "GameBox",
+  "short_name": "GameBox",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090b14",
+  "theme_color": "#090b14",
+  "description": "Quick games designed for your phone.",
+  "icons": []
+}
