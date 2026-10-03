@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>GameBox — 8 Ball</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07090b;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+body{touch-action:none}
+.app{height:100dvh;display:flex;flex-direction:column}
+.top{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex:none}
+.brand{font-size:20px;font-weight:800}.sub{font-size:12px;opacity:.55;margin-top:2px}
+.turn{font-weight:700;font-size:14px;text-align:right}.status{font-size:11px;opacity:.6;margin-top:2px}
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:4px 8px}
+.tableWrap{width:min(1200px,100%);max-height:100%;aspect-ratio:2/1;display:flex;align-items:center;justify-content:center}
+.table{position:relative;width:100%;height:100%;border-radius:18px;background:#07583d;border:clamp(12px,2.2vw,28px) solid #4a2b19;box-shadow:inset 0 0 0 5px #765033,inset 0 0 30px #001b12,0 18px 50px #000b;overflow:visible}
+.rail{position:absolute;inset:2%;border:2px solid #0b7a55;border-radius:8px;pointer-events:none}
+.pocket{position:absolute;width:clamp(34px,5.2vw,70px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#222 0,#050505 55%,#000 75%);box-shadow:inset 0 3px 9px #5553,0 2px 4px #000;z-index:30}
+.p1{left:-3.6%;top:-5%}.p2{left:50%;top:-6%;transform:translateX(-50%)}.p3{right:-3.6%;top:-5%}
+.p4{left:-3.6%;bottom:-5%}.p5{left:50%;bottom:-6%;transform:translateX(-50%)}.p6{right:-3.6%;bottom:-5%}
+#balls{position:absolute;inset:0}
+.ball{position:absolute;width:clamp(22px,3.15vw,38px);height:clamp(22px,3.15vw,38px);border-radius:50%;transform:translate(-50%,-50%);z-index:20;box-shadow:inset -5px -6px 9px #0006,inset 3px 3px 6px #fff8,2px 3px 5px #0009}
+.ball:after{content:attr(data-n);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42%;height:42%;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;font-size:clamp(7px,1vw,12px);font-weight:900}
+.cueball{background:radial-gradient(circle at 30% 25%,#fff,#ddd 70%,#aaa)}.cueball:after{display:none}
+.eight{background:radial-gradient(circle at 30% 25%,#444,#050505 70%)} 
+.solid1{background:#e8c72f}.solid2{background:#2566c7}.solid3{background:#c52b2b}.solid4{background:#7443a8}.solid5{background:#e87925}.solid6{background:#218b4c}.solid7{background:#71442b}
+.stripe1,.stripe2,.stripe3,.stripe4,.stripe5,.stripe6,.stripe7{background:#fff}
+.stripe1:before,.stripe2:before,.stripe3:before,.stripe4:before,.stripe5:before,.stripe6:before,.stripe7:before{content:"";position:absolute;inset:24% 0}
+.stripe1:before{background:#e8c72f}.stripe2:before{background:#2566c7}.stripe3:before{background:#c52b2b}.stripe4:before{background:#7443a8}.stripe5:before{background:#e87925}.stripe6:before{background:#218b4c}.stripe7:before{background:#71442b}
+.aim{position:absolute;height:2px;background:#fff9;transform-origin:left center;z-index:10;box-shadow:0 0 7px #fff5;pointer-events:none}
+.ghost{position:absolute;width:clamp(22px,3.15vw,38px);height:clamp(22px,3.15vw,38px);border:1px solid #fff8;border-radius:50%;transform:translate(-50%,-50%);z-index:9;display:none}
+.cue{position:absolute;height:7px;border-radius:6px;background:linear-gradient(#ead8a9,#b88a4f 55%,#704322);transform-origin:right center;z-index:8;box-shadow:0 2px 5px #0009;pointer-events:none}
+.controls{flex:none;height:104px;width:min(850px,100%);margin:auto;display:flex;align-items:center;gap:12px;padding:8px 14px 16px}
+.panel{flex:1}.row{display:flex;justify-content:space-between;font-size:11px;opacity:.7;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:#fff}
+button{border:0;border-radius:13px;padding:12px 16px;font-weight:800;font-size:13px;background:#1b1f23;color:#fff}
+button:active{transform:scale(.96)}.shoot{background:#fff;color:#111;min-width:92px}
+.info{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px 25px;border-radius:18px;background:#090a0ccc;backdrop-filter:blur(14px);font-size:19px;font-weight:800;text-align:center;z-index:100;opacity:0;pointer-events:none;transition:.2s}.info.show{opacity:1}
+.rules{position:fixed;right:12px;bottom:112px;width:min(330px,calc(100% - 24px));padding:14px;border-radius:16px;background:#0a0d0ed9;backdrop-filter:blur(12px);font-size:12px;line-height:1.45;z-index:90;display:none}.rules b{font-size:14px}
+@media(max-height:600px){.top{height:50px}.controls{height:82px;padding-bottom:8px}.stage{padding:2px 8px}.rules{bottom:88px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div><div class="brand">GameBox</div><div class="sub">8 Ball Pool</div></div>
+  <div><div id="turn" class="turn">Your turn</div><div id="status" class="status">Open table</div></div>
+</header>
+<main class="stage"><div class="tableWrap"><div id="table" class="table">
+  <div class="rail"></div><div class="pocket p1"></div><div class="pocket p2"></div><div class="pocket p3"></div><div class="pocket p4"></div><div class="pocket p5"></div><div class="pocket p6"></div>
+  <div id="balls"></div><div id="aim" class="aim"></div><div id="ghost" class="ghost"></div><div id="cue" class="cue"></div>
+</div></div></main>
+<div class="controls">
+  <div class="panel"><div class="row"><span>POWER</span><span id="powerText">55%</span></div><input id="power" type="range" min="5" max="100" value="55"></div>
+  <button id="rulesBtn">RULES</button><button id="rackBtn">RACK</button><button id="shoot" class="shoot">SHOOT</button>
+</div>
+<div id="info" class="info"></div>
+<div id="rules" class="rules"><b>8-Ball rules</b><br>Break the rack. After the first legal group pocket, you are assigned solids or stripes. Clear your group, then legally pocket the 8 to win. Pocketing the cue ball is a scratch and gives the opponent ball-in-hand. Pocketing the 8 early loses the game. A turn continues when you legally pocket your own ball; otherwise it passes.</div>
+</div>
+<script>
+const table=document.getElementById('table'), ballsEl=document.getElementById('balls'),aimEl=document.getElementById('aim'),ghostEl=document.getElementById('ghost'),cueEl=document.getElementById('cue');
+const power=document.getElementById('power'),powerText=document.getElementById('powerText'),shootBtn=document.getElementById('shoot'),turnEl=document.getElementById('turn'),statusEl=document.getElementById('status'),info=document.getElementById('info'),rules=document.getElementById('rules');
+let balls=[],cueBall=null,angle=0,shooting=false,turn='human',firstShot=true,groups={human:null,ai:null},pocketedThisShot=[],foul=false,shotHadLegalPocket=false,ballInHand=false,aimTouch=false;
+
+const pocketPts=()=>{let w=table.clientWidth,h=table.clientHeight;return[[0,0],[w/2,0],[w,0],[0,h],[w/2,h],[w,h]]};
+function addBall(n,x,y){let e=document.createElement('div');e.className='ball '+(n===0?'cueball':n===8?'eight':n<8?'solid'+n:'stripe'+(n-8));e.dataset.n=n;e.style.left=x+'px';e.style.top=y+'px';ballsEl.appendChild(e);let b={n,x,y,vx:0,vy:0,r:Math.max(11,table.clientWidth*.015),el:e,active:true};balls.push(b);if(n===0)cueBall=b;return b}
+function rack(){
+  ballsEl.innerHTML='';balls=[];cueBall=null;firstShot=true;groups={human:null,ai:null};turn='human';shooting=false;ballInHand=false;
+  let w=table.clientWidth,h=table.clientHeight,s=Math.min(w,h)*.043;
+  addBall(0,w*.24,h*.5);
+  let nums=[1,9,2,10,8,11,3,12,4,13,5,14,6,15,7];
+  let idx=0;
+  for(let row=0;row<5;row++){for(let j=0;j<=row;j++){let x=w*.72+row*s*.88,y=h*.5+(j-row/2)*s;addBall(nums[idx++],x,y)}}
+  statusEl.textContent='Open table';turnEl.textContent='Your turn';draw();
+}
+function draw(){
+  balls.forEach(b=>{b.el.style.display=b.active?'block':'none';if(b.active){b.el.style.left=b.x+'px';b.el.style.top=b.y+'px'}});
+  if(!cueBall?.active)return;
+  let L=table.clientWidth*.30;
+  aimEl.style.left=cueBall.x+'px';aimEl.style.top=cueBall.y+'px';aimEl.style.width=L+'px';aimEl.style.transform=`rotate(${angle}rad)`;
+  cueEl.style.left=cueBall.x+'px';cueEl.style.top=cueBall.y+'px';cueEl.style.width=Math.max(120,table.clientWidth*.22)+'px';cueEl.style.transform=`rotate(${angle+Math.PI}rad)`;
+  if(!shooting&&turn==='human'){ghostEl.style.display='block';ghostEl.style.left=(cueBall.x+Math.cos(angle)*L)+'px';ghostEl.style.top=(cueBall.y+Math.sin(angle)*L)+'px'}else ghostEl.style.display='none';
+}
+function setAim(x,y){if(shooting||turn!=='human'||!cueBall?.active)return;angle=Math.atan2(y-cueBall.y,x-cueBall.x);draw()}
+table.addEventListener('pointermove',e=>{let r=table.getBoundingClientRect();setAim(e.clientX-r.left,e.clientY-r.top)});
+table.addEventListener('pointerdown',e=>{aimTouch=true;let r=table.getBoundingClientRect();setAim(e.clientX-r.left,e.clientY-r.top)});
+table.addEventListener('pointerup',()=>aimTouch=false);
+power.oninput=()=>powerText.textContent=power.value+'%';
+document.getElementById('rulesBtn').onclick=()=>rules.style.display=rules.style.display==='block'?'none':'block';
+document.getElementById('rackBtn').onclick=rack;
+
+function shoot(){if(shooting||turn!=='human'||!cueBall?.active)return;startShot(Number(power.value))}
+function startShot(p){
+ shooting=true;pocketedThisShot=[];foul=false;shotHadLegalPocket=false;
+ let speed=.065*p;cueBall.vx=Math.cos(angle)*speed;cueBall.vy=Math.sin(angle)*speed;requestAnimationFrame(physics);
+}
+shootBtn.onclick=shoot;
+
+function physics(){
+ let moving=false;
+ for(const b of balls){if(!b.active)continue;b.x+=b.vx;b.y+=b.vy;b.vx*=.989;b.vy*=.989;if(Math.abs(b.vx)+Math.abs(b.vy)>.035)moving=true;rail(b)}
+ collide();pockets();draw();
+ if(moving)requestAnimationFrame(physics);else endShot();
+}
+function rail(b){
+ let m=b.r+4,w=table.clientWidth,h=table.clientHeight;
+ if(b.x<m){b.x=m;b.vx=Math.abs(b.vx)*.84}
+ if(b.x>w-m){b.x=w-m;b.vx=-Math.abs(b.vx)*.84}
+ if(b.y<m){b.y=m;b.vy=Math.abs(b.vy)*.84}
+ if(b.y>h-m){b.y=h-m;b.vy=-Math.abs(b.vy)*.84}
+}
+function collide(){
+ for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){let a=balls[i],b=balls[j];if(!a.active||!b.active)continue;let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=a.r+b.r;if(d<min&&d>0){let nx=dx/d,ny=dy/d,o=min-d;a.x-=nx*o/2;a.y-=ny*o/2;b.x+=nx*o/2;b.y+=ny*o/2;let rel=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;if(rel>0){let imp=rel*.96;a.vx-=imp*nx;a.vy-=imp*ny;b.vx+=imp*nx;b.vy+=imp*ny}}}
+}
+function pockets(){
+ for(const b of balls){if(!b.active)continue;for(const [px,py] of pocketPts()){if(Math.hypot(b.x-px,b.y-py)<Math.max(24,b.r*2.4)){drop(b);break}}}
+}
+function drop(b){
+ b.active=false;b.vx=b.vy=0;pocketedThisShot.push(b.n);
+ if(b.n===0){foul=true;show('SCRATCH');setTimeout(()=>{b.active=true;b.x=table.clientWidth*.24;b.y=table.clientHeight*.5;ballInHand=true;draw()},500)}
+ else if(b.n!==8){shotHadLegalPocket=true;if(firstShot){let isSolid=b.n<8;groups.human=isSolid?'solid':'stripe';groups.ai=isSolid?'stripe':'solid';firstShot=false;statusEl.textContent='You: '+groups.human}else if(groups.human&&((groups.human==='solid'&&b.n<8)||(groups.human==='stripe'&&b.n>8))){shotHadLegalPocket=true}}
+}
+function endShot(){
+ shooting=false;
+ let eight=pocketedThisShot.includes(8);
+ if(eight){let remaining=balls.filter(b=>b.active&&b.n!==0&&b.n!==8);let myGroup=groups[turn];let left=myGroup?remaining.filter(b=>myGroup==='solid'?b.n<8:b.n>8):remaining;if(left.length===0&&!foul)endGame(turn==='human'?'YOU WIN':'AI WINS');else endGame(turn==='human'?'YOU LOSE':'AI LOSES');return}
+ if(foul){switchTurn();return}
+ if(shotHadLegalPocket){turnEl.textContent=turn==='human'?'Your turn':'AI turn';if(turn==='ai')setTimeout(aiTurn,650)}
+ else switchTurn();
+}
+function switchTurn(){turn=turn==='human'?'ai':'human';turnEl.textContent=turn==='human'?'Your turn':'AI turn';if(turn==='ai')setTimeout(aiTurn,700)}
+function aiTurn(){
+ if(shooting)return;let avail=balls.filter(b=>b.active&&b.n!==0&&b.n!==8);if(!avail.length)return;
+ let target=avail.find(b=>groups.ai?((groups.ai==='solid'&&b.n<8)||(groups.ai==='stripe'&&b.n>8)):true)||avail[0];
+ angle=Math.atan2(target.y-cueBall.y,target.x-cueBall.x);let p=42+Math.random()*28;draw();setTimeout(()=>{if(turn==='ai')startShot(p)},350);
+}
+function show(t){info.textContent=t;info.classList.add('show');setTimeout(()=>info.classList.remove('show'),1200)}
+function endGame(t){info.textContent=t;info.classList.add('show');shooting=true;setTimeout(()=>{shooting=false},1000)}
+window.addEventListener('resize',()=>{rack()});rack();
+</script>
+</body>
+</html>
