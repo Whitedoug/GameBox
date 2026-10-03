@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#090b14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GameBox</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css?v=8ball1">
+</head>
+<body>
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+<main id="app">
+<section id="home" class="screen active">
+<header class="hero">
+<div class="brand-row"><div class="brand-mark" aria-hidden="true"><span>×</span><span>○</span></div><p class="eyebrow">GAMEBOX</p></div>
+<h1>Play anyone.<br><span>Even AI.</span></h1><p class="subtitle">Quick games designed for your phone.</p>
+</header>
+<div class="section-label">Featured games</div>
+<button class="game-card" onclick="openGame('tictactoe')" aria-label="Open Tic-Tac-Toe">
+<div class="card-art"><div class="mini-grid"><i>×</i><i></i><i>○</i><i></i><i>×</i><i></i><i>○</i><i></i><i>×</i></div></div>
+<div class="game-info"><span class="game-tag">PLAY NOW</span><h2>Tic-Tac-Toe</h2><p>Challenge an AI opponent</p></div><span class="chevron">→</span>
+</button>
+<button class="game-card pool-card" onclick="openGame('pool')" aria-label="Open 8-Ball Pool">
+<div class="pool-card-art"><span class="pool-ball ball8">8</span><span class="pool-ball ball1">1</span><span class="pool-ball ball15">15</span></div>
+<div class="game-info"><span class="game-tag">PLAY NOW</span><h2>8-Ball Pool</h2><p>Rack up against an AI opponent</p></div><span class="chevron">→</span>
+</button>
+<div class="coming-soon"><div class="plus">＋</div><div><span class="game-tag muted">COMING SOON</span><strong>More games</strong><p>Chess, Checkers and more</p></div></div>
+<footer class="home-footer">Built for quick matches. More coming soon.</footer>
+</section>
+
+<section id="game" class="screen">
+<div class="topbar"><button class="icon-button" onclick="showHome()" aria-label="Back">←</button><div class="top-title"><span>GAMEBOX</span><strong>Tic-Tac-Toe</strong></div><button class="icon-button" onclick="newGame()" aria-label="New game">↻</button></div>
+<div class="score-card"><div class="score-player"><span class="player-dot human"></span><span>You</span><b id="humanScore">0</b></div><div class="score-divider">VS</div><div class="score-player"><span class="player-dot ai"></span><span>AI</span><b id="aiScore">0</b></div></div>
+<div class="status-pill" id="status">Your turn</div><div class="board-shell"><div class="board" id="board"></div></div>
+<div class="difficulty-wrap"><div class="difficulty-heading"><div><span class="game-tag muted">OPPONENT</span><p>AI difficulty</p></div><span class="sparkle">✦</span></div><div class="segmented"><button data-level="easy" onclick="setDifficulty('easy')">Easy</button><button data-level="medium" onclick="setDifficulty('medium')">Medium</button><button data-level="hard" class="selected" onclick="setDifficulty('hard')">Hard</button></div></div>
+<button class="primary" id="newGameButton" onclick="newGame()"><span>New Game</span><span>＋</span></button>
+</section>
+
+<section id="pool" class="screen pool-screen">
+<div class="pool-topbar"><button class="icon-button" onclick="showHome()" aria-label="Back">←</button><div class="top-title"><span>GAMEBOX</span><strong>8-Ball Pool</strong></div><button class="icon-button" onclick="resetPool()" aria-label="New game">↻</button></div>
+<div class="pool-head"><div class="pool-player"><span class="cue-dot"></span><div><small id="poolYouLabel">YOU</small><strong id="poolYouGroup">Open</strong></div></div><div class="pool-score" id="poolScore">0 — 0</div><div class="pool-player ai-player"><div><small>AI</small><strong id="poolAIGroup">Open</strong></div><span class="ai-dot"></span></div></div>
+<div class="pool-status" id="poolStatus">Your turn · Aim and shoot</div>
+<div class="table-wrap"><canvas id="poolCanvas" aria-label="8-ball pool table"></canvas></div>
+<div class="pool-controls">
+<div class="power-row"><span>POWER</span><input id="power" type="range" min="8" max="100" value="48"><output id="powerValue">48%</output></div>
+<div class="aim-hint">Drag around the cue ball to aim</div>
+<button id="shootBtn" class="shoot-button" onclick="playerShoot()"><span class="cue-icon">◉</span> SHOOT</button>
+</div>
+<div class="pool-actions"><button onclick="resetPool()">New Game</button><button onclick="showPoolRules()">Rules</button></div>
+</section>
+</main>
+<div id="rulesModal" class="modal" hidden><div class="modal-card"><button class="modal-close" onclick="closePoolRules()">×</button><span class="game-tag">8-BALL</span><h2>How to play</h2><p>Sink your assigned balls, then legally pocket the 8-ball to win.</p><ul><li>Groups are assigned after the first legal pocket.</li><li>Scratch = foul. The opponent gets ball-in-hand.</li><li>If you pocket one of your balls, you keep shooting.</li><li>Pocket the 8-ball before clearing your group and you lose.</li></ul><button class="primary" onclick="closePoolRules()">Got it</button></div></div>
+<script src="app.js?v=8ball1"></script>
+</body></html>
